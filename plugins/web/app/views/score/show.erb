@@ -1,0 +1,19 @@
+<div>
+  <div>
+    <span>Title:</span><span data-title><%= @score.title %></span>
+  </div>
+  <div>
+    <span>Price:</span><span data-price><%= @score.formatted_price %></span>
+  </div>
+
+  <% @score.purchased do |purchased_content| %>
+    <div class="score-container"><%= purchased_content %></div>
+  <% end %>
+
+  <% @score.un_purchased do %>
+      <%= form_tag(cart_path, method: :post) do %>
+          <input type="hidden" name="score_id" value="<%= @score.id %>"/>
+          <%= submit_tag 'Add to Cart', id: 'add-to-cart' %>
+      <% end %>
+  <% end %>
+</div>

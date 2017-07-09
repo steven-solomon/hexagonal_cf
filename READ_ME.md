@@ -23,7 +23,8 @@ $ bundle gem awesome_scores --no-exe --no-coc --test=rspec --no-mit
 ```
 
 I have excluded code of conduct, an exe, mit license and opted to use Rspec. If your 
-preferences differ feel free to tweak the command.
+preferences differ feel free to tweak the command. Make sure to remove/update the generated gemspec to 
+include at least summary and authors.
 
 Now that we have our gem lets talk about where rails should go. Well since Rails is a detail as Uncle Bob would say, we should
 put it as a plugin to our app. Let's create a plugin directory. 

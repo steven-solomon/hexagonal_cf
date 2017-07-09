@@ -1,0 +1,11 @@
+<div data-items-count><%= @cart.items_count %></div>
+<% @cart.scores.map do |score| %>
+    <% presenter = ScorePresenter.new(score) %>
+    <div data-score-title><%= presenter.title %></div>
+    <div data-score-price><%= presenter.formatted_price %></div>
+<% end %>
+<div data-total><%= @cart.formatted_price %></div>
+
+<%= form_tag(checkout_index_path, method: :post) do %>
+    <%= submit_tag 'Checkout' %>
+<% end %>

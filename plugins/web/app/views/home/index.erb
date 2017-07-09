@@ -1,0 +1,7 @@
+<h1>Hello</h1>
+
+<div>
+  <% @scores.each do |score| %>
+      <%= link_to score.title, score_path(score) %>
+  <% end %>
+</div>

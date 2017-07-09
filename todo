@@ -1,0 +1,11 @@
+- impelement more robust contract tests;
+    ActiveRecordScoreRepo#purchased_content wasn't implemented and it was hard to figure out why the app doesn't work
+- choice either score_id or product id to refer to product
+- decide if messages should have 'get' prefix on repos
+- rename FakeScore to StubScore
+- user_id comes first in FindScore#find
+- rename PurchasedContent to ScoreContent
+
+NOTES:
+
+- type tests actually saved me a few times

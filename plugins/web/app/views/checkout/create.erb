@@ -1,0 +1,5 @@
+<div id="complete">Thanks! You have completed your purchase.</div>
+
+<% @purchased_scores.each do |score| %>
+  <%= link_to score.title, score_path(score), class: 'score' %>
+<% end %>
