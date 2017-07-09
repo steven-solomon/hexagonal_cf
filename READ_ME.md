@@ -144,6 +144,32 @@ feature 'anonymous user' do
 end
 ```
 
+In order to run our tests in a convenient way, lets create a toplevel task to run all tests in the system. It is also important
+to make sure that a failing test run bubbles up the failure as a non-zero exit status code. So we check for that
+using the `$?` variable which contains the last run process.
+
+```ruby
+# Rootlevel rakefile
+
+task :default do
+  chdir 'plugins/web' do
+    system 'bundle'
+    system 'rake'
+
+    raise 'web tests failed' if $?.exitstatus != 0
+  end
+end
+```
+ 
+Now we can run the test from the top level. 
+```
+$ rake 
+```
+
+Our test now fails. I am going to omit the TDD workflow that I would do here and just give you the code to pass the 
+tests and specify where it lives. But there are number of fast cycles of Red - Green - Refactor that are taken to arrive at this
+code. It is by no means the code that made the initial tests pass and has change as the consequence of each new test.
+ 
 1. [Martin pg 127 PPP]
 2. [Martin https://www.youtube.com/watch?v=Nsjsiz2A9mg]
 3. [Beck XP 99]
