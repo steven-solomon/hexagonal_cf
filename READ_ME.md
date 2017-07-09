@@ -33,13 +33,13 @@ $ mkdir plugins
 ```
 
 Now lets make our Rails app. Navigate to the plugins directory and run the rails new command.
-
+We skip the tests since we will be using rspec.
 ```
 $ cd plugins
-$ rails new web
+$ rails new web --skip-test
 ```
 
-It will get pretty annoying flipping directory levels just to execute `rails s` so lets add a quick toplevel task `rake s`
+It will get pretty annoying changing directory levels just to execute `rails s` so lets add a quick toplevel task `rake s`
  to start the server. 
  
 ```
@@ -51,7 +51,7 @@ task :s do
 end
 ```
 
-From the root directory you can now start the server.
+From the root directory we can now start the server.
 
 ```
 $ cd .. # navigate to root
@@ -76,6 +76,73 @@ page since the only product we will have is free. Instead the user can immediate
 
 As in the XP style we begin with a failing feature test, then we will unit test any logic, and finally deploy the app to cloud foundry so that 
 the PM can confirm that the feature is complete. 
+
+Let's install Capybara and Rspec so we can do feature testing. 
+Edit the Gemfile of the rails app to include rspec-rails and capybara.
+```
+group :development, :test do
+  gem 'byebug', platform: :mri
+  gem 'rspec-rails'
+  gem 'capybara'
+end
+```
+
+Next run bundle from within the rails app directory.
+```
+$ bundle install
+$ rails g rspec:install
+```
+
+That's going to get annoying as well so lets modify our toplevel rake task
+```
+# Rakefile in root directory
+task :s do
+  chdir 'plugins/web' do
+    system 'bundle'
+    system 'rails s'
+  end
+end
+```
+
+Now let's write our first feature test. Inside the web application create the following test.
+
+```ruby
+require 'rails_helper'
+
+feature 'anonymous user' do
+  scenario 'can buy a free score' do
+    given_I_am_on_the_homepage
+    when_I_add_the_free_score_to_my_cart
+    and_I_checkout
+    then_I_see_the_score
+  end
+
+  def given_I_am_on_the_homepage
+    visit '/'
+  end
+
+  def when_I_add_the_free_score_to_my_cart
+    click 'Free Score'
+    expect(page).to have_content('Cost: Free')
+
+    click 'Add to Cart'
+    expect(page).to have_content('1 Item')
+    expect(page).to have_content('Free Score')
+  end
+
+  def and_I_checkout
+    click 'Checkout'
+    expect(page).to have_content('Total: Free')
+
+    click 'Complete'
+  end
+
+  def then_I_see_the_score
+    expect(page).to have_content('Free Score')
+    expect(find('.score-container')).to be_truthy
+  end
+end
+```
 
 1. [Martin pg 127 PPP]
 2. [Martin https://www.youtube.com/watch?v=Nsjsiz2A9mg]
