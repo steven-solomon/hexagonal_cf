@@ -3,7 +3,7 @@ class AddProductToCart
     @repo = repo
   end
 
-  def add(user_id, product_id)
-    @repo.add(user_id, product_id)
+  def add(user_id, score_id)
+    @repo.add(user_id, score_id)
   end
 end
