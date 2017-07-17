@@ -10,7 +10,7 @@ describe ViewCart do
 
     viewer = ViewCart.new(cart_repo)
 
-    expect(viewer.get_cart(user_id)).to eq(cart)
+    expect(viewer.cart(user_id)).to eq(cart)
   end
 
   it_should_behave_like 'cart_repo' do

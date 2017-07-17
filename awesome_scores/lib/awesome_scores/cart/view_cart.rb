@@ -3,7 +3,7 @@ class ViewCart
     @repo = repo
   end
 
-  def get_cart(user_id)
+  def cart(user_id)
     @repo.fetch(user_id)
   end
 end

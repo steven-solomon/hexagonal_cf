@@ -1,7 +1,7 @@
 class CheckoutController < ApplicationController
   def create
     user_id = 1
-    @purchased_scores = view_cart.get_cart(user_id).scores
+    @purchased_scores = view_cart.cart(user_id).scores
     purchase_cart.purchase(user_id)
   end
 
