@@ -1,0 +1,8 @@
+---
+applications:
+- name: hexagonal_cf
+  memory: 512M
+  host: hexagonal_cf
+  path: ./plugins/web
+  random-route: true # don't include this for real apps
+  command: rake db:migrate

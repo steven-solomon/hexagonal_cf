@@ -23,6 +23,16 @@ def run_tests(path)
   exitstatus
 end
 
+namespace :acceptance do
+  task :push do
+    chdir 'plugins/web' do
+      system 'rake assets:precompile'
+      system 'bundle package --all'
+    end
+    system 'cf push'
+  end
+end
+
 task :s do
   chdir 'plugins/web' do
     system 'bundle'

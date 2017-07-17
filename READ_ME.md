@@ -190,7 +190,7 @@ end
 ```
  
 Now we can run the test from the top level. 
-```
+```bash
 $ rake 
 ```
 
@@ -204,6 +204,48 @@ and Jim Weirich Decoupling from rails 6.
 
 You can see the code that passes the above tests here: https://github.com/steven-solomon/hexagonal_cf
 
+Now that we have such an app we want to be able to push it to Cloud Foundry where our PM can accept our story. 
+However before we do that we need to setup a manifest. 
+This manifest will have a path for our rails app and the typical app config. Also note
+the random-route flag so you don't collide when you run this tutorial 
+
+```yaml
+---
+applications:
+- name: hexagonal_cf
+  memory: 512M
+  host: hexagonal_cf
+  path: ./plugins/web
+  random-route: true 
+```
+
+Next in order to actually push we need to make sure our local gem is pushed up to Cloud Foundry 
+in order to do this we need to execute `bundle package -all` in the rails app directory. But we don't
+want to do this by hand each time as it will be easy to forget so let's right a push task 
+
+```ruby
+namespace :acceptance do
+  task :push do
+    chdir 'plugins/web' do
+      system 'bundle package --all'
+    end
+    system 'cf push'
+  end
+end
+```
+
+In order to push our app we won't want to add the bloat of all the packaged gems
+we only want to send ours. So create a `.cfignore` file for the rails app and add the rails 
+default `.gitnore` contents then add the following at the end.
+
+```plugins/web/.cfignore
+# rails ignore above...
+spec
+!vendor/cache/awesome_scores/*
+```
+
+Now that we are setup we can push using our rake task. However the first time will fail as 
+we don't have a database setup. Let's add that...
  
 1. [Martin pg 127 PPP]
 2. [Martin https://www.youtube.com/watch?v=Nsjsiz2A9mg]
