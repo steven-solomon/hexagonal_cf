@@ -1,4 +1,3 @@
-- user_id comes first in FindScore#find
 - rename PurchasedContent to ScoreContent
 
 NOTES:
