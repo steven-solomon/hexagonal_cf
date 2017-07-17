@@ -111,6 +111,10 @@ Now let's write our first feature test. Inside the web application create the fo
 require 'rails_helper'
 
 feature 'anonymous user' do
+  before do
+    Score.create(price: 0, title: 'Free Score')
+  end
+
   scenario 'can buy a free score' do
     given_I_am_on_the_homepage
     when_I_add_the_free_score_to_my_cart
@@ -123,22 +127,29 @@ feature 'anonymous user' do
   end
 
   def when_I_add_the_free_score_to_my_cart
-    click 'Free Score'
-    expect(page).to have_content('Cost: Free')
+    click_on 'Free Score'
 
-    click 'Add to Cart'
-    expect(page).to have_content('1 Item')
-    expect(page).to have_content('Free Score')
+    expect(find('[data-title]')).to have_content('Free Score')
+    expect(find('[data-price]')).to have_content('Free')
+    expect(page).not_to have_css('.score-container')
+
+    click_on 'Add to Cart'
+
+    expect(find('[data-items-count]')).to have_content('1')
+    expect(find('[data-score-title]')).to have_content('Free Score')
+    expect(find('[data-score-price]')).to have_content('Free')
+    expect(find('[data-total]')).to have_content('Free')
   end
 
   def and_I_checkout
-    click 'Checkout'
-    expect(page).to have_content('Total: Free')
+    click_on 'Checkout'
 
-    click 'Complete'
+    expect(find('#complete')).to be_truthy
   end
 
   def then_I_see_the_score
+    first('.score').click
+
     expect(page).to have_content('Free Score')
     expect(find('.score-container')).to be_truthy
   end
@@ -155,10 +166,26 @@ using the `$?` variable which contains the last run process.
 task :default do
   chdir 'plugins/web' do
     system 'bundle'
-    system 'rake'
-
-    raise 'web tests failed' if $?.exitstatus != 0
+    system 'rake db:migrate'
+    system 'rake db:test:prepare'
   end
+
+  raise 'tests failed' if any_failures(%w(plugins/web awesome_scores))
+end
+
+def any_failures(targets)
+  targets
+      .map {|path| run_tests(path)}
+      .any? {|status_code| status_code != 0}
+end
+
+def run_tests(path)
+  exitstatus = nil
+  chdir path do
+    system 'rake'
+    exitstatus = $?.exitstatus
+  end
+  exitstatus
 end
 ```
  
@@ -170,7 +197,17 @@ $ rake
 Our test now fails. I am going to omit the TDD workflow that I would do here and just give you the code to pass the 
 tests and specify where it lives. But there are number of fast cycles of Red - Green - Refactor that are taken to arrive at this
 code. It is by no means the code that made the initial tests pass and has change as the consequence of each new test.
+
+There have already been a few great voices on how to build out functionality using the Hexagonal Architecture.
+I don't want to rehash those ideas here. Checkout the original post by Cockburn 4, Matt Parker Screen cast on Hexagonal in Rails 5, 
+and Jim Weirich Decoupling from rails 6.
+
+You can see the code that passes the above tests here: https://github.com/steven-solomon/hexagonal_cf
+
  
 1. [Martin pg 127 PPP]
 2. [Martin https://www.youtube.com/watch?v=Nsjsiz2A9mg]
 3. [Beck XP 99]
+4. [Cockburn http://alistair.cockburn.us/Hexagonal+architecture]
+5. [Parker https://www.youtube.com/channel/UCCptggI2qaxsBXiwfit6tNQ]
+6. [Weirich https://www.youtube.com/watch?v=tg5RFeSfBM4]
