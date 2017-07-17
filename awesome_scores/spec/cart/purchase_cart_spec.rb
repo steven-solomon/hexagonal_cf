@@ -6,7 +6,7 @@ describe PurchaseCart do
   # client code to buy a cart that isn't persisted in the cart repo.
   let(:user_id) {1}
   let(:score_id) {12131}
-  let(:score) {FakeScore.new(score_id, 0)}
+  let(:score) {StubScore.new(score_id, 0)}
   let(:cart_for_user) {Cart.new([score])}
 
   let(:user_repo) {double(:user_repo, add_purchase: nil, purchases: nil)}
@@ -23,7 +23,7 @@ describe PurchaseCart do
   end
 
   context 'when score#price is not free' do
-    let(:score) {FakeScore.new(score_id, 100)}
+    let(:score) {StubScore.new(score_id, 100)}
 
     it 'is not added to the user' do
       allow(cart_repo).to receive(:fetch).with(user_id).and_return(cart_for_user)
@@ -35,7 +35,7 @@ describe PurchaseCart do
     end
   end
 
-  class FakeScore
+  class StubScore
     def initialize(id, price)
       @id = id
       @price = price
