@@ -5,9 +5,13 @@ task :default do
     system 'rake db:test:prepare'
   end
 
-  raise 'tests failed' if %w(plugins/web awesome_scores)
-                              .map {|path| run_tests(path)}
-                              .any? {|status_code| status_code != 0}
+  raise 'tests failed' if any_failures(%w(plugins/web awesome_scores))
+end
+
+def any_failures(targets)
+  targets
+      .map {|path| run_tests(path)}
+      .any? {|status_code| status_code != 0}
 end
 
 def run_tests(path)
